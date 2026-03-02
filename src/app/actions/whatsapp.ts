@@ -73,3 +73,17 @@ export async function getSupportLogs() {
 
     return data;
 }
+
+export async function clearSupportLogs() {
+    const { error } = await supabase
+        .from("whatsapp_chats")
+        .delete()
+        .neq("id", 0);
+
+    if (error) {
+        console.error("Supabase error clearing whatsapp chats:", error);
+        throw new Error("Failed to clear support logs");
+    }
+
+    revalidatePath("/");
+}

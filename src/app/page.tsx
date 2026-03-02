@@ -4,7 +4,7 @@ import { createProposal } from "./actions/proposals";
 import { getProposals } from "./actions/get-proposals";
 import { createImpactReport } from "./actions/impact";
 import { getImpactReports } from "./actions/get-impact-reports";
-import { processWhatsAppMessage, getSupportLogs } from "./actions/whatsapp";
+import { processWhatsAppMessage, getSupportLogs, clearSupportLogs } from "./actions/whatsapp";
 
 export default async function Home() {
   const [products, proposals, impactReports, supportLogs] = await Promise.all([
@@ -272,6 +272,12 @@ export default async function Home() {
             </section>
 
             <section className="lg:col-span-2 space-y-6 max-h-[700px] overflow-y-auto pr-4 custom-scrollbar">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest pl-1">Live History Audit</span>
+                <form action={clearSupportLogs}>
+                  <button type="submit" className="text-[10px] font-black text-red-500/50 hover:text-red-500 uppercase tracking-widest transition-colors">Clear All History</button>
+                </form>
+              </div>
               {supportLogs.length === 0 ? (
                 <div className="glass-card p-20 text-center flex flex-col items-center gap-4 bg-white/[0.01]">
                   <div className="w-12 h-12 rounded-full border-2 border-dashed border-[#25D366]/20" />
