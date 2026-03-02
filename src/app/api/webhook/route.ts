@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
-// Verification for Meta Webhook Setup
+// Verification for Meta Webhook Setup (Handshake)
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const mode = searchParams.get("hub.mode");
@@ -76,9 +76,13 @@ export async function GET(req: NextRequest) {
 
     const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || "sustainable_ai_token";
 
+    // Meta expects a raw 200 response with ONLY the challenge string as the body
     if (mode === "subscribe" && token === VERIFY_TOKEN) {
-        return new NextResponse(challenge, { status: 200 });
+        return new Response(challenge, {
+            status: 200,
+            headers: { "Content-Type": "text/plain" },
+        });
     }
 
-    return new NextResponse("Forbidden", { status: 403 });
+    return new Response("Forbidden", { status: 403 });
 }
