@@ -41,6 +41,7 @@ export async function processWhatsAppMessage(formData: FormData) {
                 phone_number: "SYSTEM_SIMULATOR", // Placeholder for simulator
                 customer_message: message,
                 ai_intent: response.intent_category,
+                extracted_order_id: response.extracted_order_id || null,
                 needs_escalation: response.needs_escalation,
                 ai_reply: response.whatsapp_reply,
             },

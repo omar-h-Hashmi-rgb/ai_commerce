@@ -285,7 +285,7 @@ export default async function Home() {
                         <div className={`p-1.5 rounded-full ${log.needs_escalation ? 'bg-red-500' : 'bg-[#25D366]'} group relative`}>
                           <div className={`absolute inset-0 rounded-full animate-ping opacity-25 ${log.needs_escalation ? 'bg-red-500' : 'bg-[#25D366]'}`} />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/40">{log.intent_category.replace('_', ' ')}</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/40">{(log.ai_intent || log.intent_category || 'Inquiry').replace('_', ' ')}</span>
                       </div>
                       {log.extracted_order_id && (
                         <div className="text-[10px] font-black px-2 py-1 rounded bg-white/10 uppercase tracking-widest text-[#25D366]">
@@ -303,7 +303,7 @@ export default async function Home() {
                       <div className="flex flex-col gap-2 p-4 rounded-2xl bg-white/[0.05] border border-white/5">
                         <span className="text-[10px] font-bold text-[#25D366] uppercase tracking-tighter">AI WhatsApp Reply</span>
                         <p className="text-base text-white font-medium leading-relaxed whitespace-pre-wrap">
-                          {log.whatsapp_reply}
+                          {log.ai_reply || log.whatsapp_reply}
                         </p>
                         {log.needs_escalation && (
                           <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-xs text-red-400 font-bold flex items-center gap-2">
