@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
             const metaUrl = `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`;
 
             try {
-                await fetch(metaUrl, {
+                const response = await fetch(metaUrl, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${WHATSAPP_TOKEN}`,
@@ -57,14 +57,24 @@ export async function POST(req: NextRequest) {
                     },
                     body: JSON.stringify({
                         messaging_product: "whatsapp",
-                        to: phoneNum,
+                        to: phoneNum, // Make sure this is just numbers, no '+' symbol
                         type: "text",
                         text: { body: aiResponse.whatsapp_reply }
                     })
                 });
-                console.log("Message successfully sent back to Meta!");
+
+                // Extract the actual response from Meta
+                const metaResponseData = await response.json();
+
+                if (!response.ok) {
+                    // If Meta rejected it, print the exact reason!
+                    console.error("🚨 META API REJECTED THE MESSAGE:", JSON.stringify(metaResponseData, null, 2));
+                } else {
+                    console.log("✅ Message successfully sent back to Meta!", metaResponseData);
+                }
+
             } catch (error) {
-                console.error("Failed to send message to Meta:", error);
+                console.error("Network failed to reach Meta:", error);
             }
         }
 
