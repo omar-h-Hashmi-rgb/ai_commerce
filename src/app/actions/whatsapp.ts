@@ -75,15 +75,19 @@ export async function getSupportLogs() {
 }
 
 export async function clearSupportLogs() {
-    const { error } = await supabase
+    console.log("🗑️ Attempting to clear all support logs from Supabase...");
+
+    // Deleting via a filter that matches everything (ID > 0)
+    const { error, count } = await supabase
         .from("whatsapp_chats")
-        .delete()
-        .neq("id", 0);
+        .delete({ count: 'exact' })
+        .gt("id", 0);
 
     if (error) {
-        console.error("Supabase error clearing whatsapp chats:", error);
+        console.error("❌ Supabase error clearing whatsapp chats:", error);
         throw new Error("Failed to clear support logs");
     }
 
-    revalidatePath("/");
+    console.log(`✅ Successfully deleted ${count} logs. Revalidating path...`);
+    revalidatePath("/", "page");
 }
