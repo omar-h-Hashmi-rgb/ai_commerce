@@ -74,15 +74,19 @@ export async function GET(req: NextRequest) {
     const token = searchParams.get("hub.verify_token");
     const challenge = searchParams.get("hub.challenge");
 
-    const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || "sustainable_ai_token";
+    console.log("Meta verification request:", { mode, token });
 
-    // Meta expects a raw 200 response with ONLY the challenge string as the body
+    // Hardcoding the token to guarantee a match against Meta's request
+    const VERIFY_TOKEN = "sustainable_ai_token";
+
     if (mode === "subscribe" && token === VERIFY_TOKEN) {
+        console.log("WEBHOOK_VERIFIED");
         return new Response(challenge, {
             status: 200,
             headers: { "Content-Type": "text/plain" },
         });
     }
 
+    console.error("Verification failed. Expected 'sustainable_ai_token', got:", token);
     return new Response("Forbidden", { status: 403 });
 }
