@@ -46,18 +46,26 @@ export async function POST(req: NextRequest) {
         const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 
         if (WHATSAPP_TOKEN && PHONE_NUMBER_ID) {
-            await fetch(`https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${WHATSAPP_TOKEN}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    messaging_product: "whatsapp",
-                    to: phoneNum,
-                    text: { body: aiResponse.whatsapp_reply },
-                }),
-            });
+            const metaUrl = `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`;
+
+            try {
+                await fetch(metaUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${WHATSAPP_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messaging_product: "whatsapp",
+                        to: phoneNum,
+                        type: "text",
+                        text: { body: aiResponse.whatsapp_reply }
+                    })
+                });
+                console.log("Message successfully sent back to Meta!");
+            } catch (error) {
+                console.error("Failed to send message to Meta:", error);
+            }
         }
 
         return NextResponse.json({ status: "success", reply: aiResponse.whatsapp_reply });
