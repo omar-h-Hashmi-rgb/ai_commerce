@@ -7,7 +7,6 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
 
         // 1. WhatsApp Webhook Verification / Message Extraction logic
-        // Following the structure provided in the requirement
         if (!body.entry || !body.entry[0].changes[0].value.messages) {
             return NextResponse.json({ status: "ignored" }, { status: 200 });
         }
@@ -21,7 +20,6 @@ export async function POST(req: NextRequest) {
         }
 
         // 2. Call Gemini with Structured JSON Output
-        // Using our existing library helper which is already grounded in business logic
         const aiResponse = await generateWhatsAppResponse(customerText);
 
         // 3. Log to Supabase (ai_logs and whatsapp_chats)
@@ -43,21 +41,20 @@ export async function POST(req: NextRequest) {
             }
         ]);
 
-        // 4. Send Message back via Meta API
-        const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
-        const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+        // 4. Send the message back via Meta API
+        const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
+        const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 
-        if (accessToken && phoneNumberId) {
-            await fetch(`https://graph.facebook.com/v22.0/${phoneNumberId}/messages`, {
+        if (WHATSAPP_TOKEN && PHONE_NUMBER_ID) {
+            await fetch(`https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${accessToken}`,
+                    "Authorization": `Bearer ${WHATSAPP_TOKEN}`,
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     messaging_product: "whatsapp",
                     to: phoneNum,
-                    type: "text",
                     text: { body: aiResponse.whatsapp_reply },
                 }),
             });
@@ -77,8 +74,9 @@ export async function GET(req: NextRequest) {
     const token = searchParams.get("hub.verify_token");
     const challenge = searchParams.get("hub.challenge");
 
-    // Replace 'YOUR_VERIFY_TOKEN' with whatever you set in Meta Dashboard
-    if (mode === "subscribe" && token === "AI_COMMERCE_TOKEN") {
+    const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || "sustainable_ai_token";
+
+    if (mode === "subscribe" && token === VERIFY_TOKEN) {
         return new NextResponse(challenge, { status: 200 });
     }
 
