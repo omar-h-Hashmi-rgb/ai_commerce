@@ -15,7 +15,16 @@ export async function createProposal(formData: FormData) {
     // 1. Generate Proposal via AI
     const proposal = await generateProposal(clientRequest, budgetLimit);
 
-    // 2. Save to Supabase
+    // 2. Log to ai_logs (Requirement)
+    await supabase.from("ai_logs").insert([
+        {
+            module_name: "Proposal Strategist",
+            user_prompt: `Client Request: ${clientRequest}\nBudget Limit: $${budgetLimit}`,
+            ai_response: proposal,
+        }
+    ]);
+
+    // 3. Save to Supabase
     const { data, error } = await supabase
         .from("proposals")
         .insert([

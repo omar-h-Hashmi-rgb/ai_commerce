@@ -15,7 +15,16 @@ export async function createImpactReport(formData: FormData) {
     // 1. Generate Impact Report via AI
     const report = await generateImpactReport(orderItems, sourcingInfo);
 
-    // 2. Save to Supabase
+    // 2. Log to ai_logs (Requirement)
+    await supabase.from("ai_logs").insert([
+        {
+            module_name: "Impact Analytics",
+            user_prompt: `Order Items: ${orderItems}\nSourcing Info: ${sourcingInfo}`,
+            ai_response: report,
+        }
+    ]);
+
+    // 3. Save to Supabase
     const { data, error } = await supabase
         .from("impact_reports")
         .insert([

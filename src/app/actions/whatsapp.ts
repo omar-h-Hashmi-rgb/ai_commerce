@@ -24,22 +24,31 @@ export async function processWhatsAppMessage(formData: FormData) {
     // 1. Generate Response via AI
     const response = await generateWhatsAppResponse(message, orderContext);
 
-    // 2. Save to Supabase
+    // 2. Log to ai_logs (Requirement)
+    await supabase.from("ai_logs").insert([
+        {
+            module_name: "WhatsApp Support Bot",
+            user_prompt: `Customer Message: ${message}\nContext: ${JSON.stringify(orderContext)}`,
+            ai_response: response,
+        }
+    ]);
+
+    // 3. Save to whatsapp_chats (Requirement)
     const { data, error } = await supabase
-        .from("support_logs")
+        .from("whatsapp_chats")
         .insert([
             {
+                phone_number: "SYSTEM_SIMULATOR", // Placeholder for simulator
                 customer_message: message,
-                intent_category: response.intent_category,
-                extracted_order_id: response.extracted_order_id || null,
+                ai_intent: response.intent_category,
                 needs_escalation: response.needs_escalation,
-                whatsapp_reply: response.whatsapp_reply,
+                ai_reply: response.whatsapp_reply,
             },
         ])
         .select();
 
     if (error) {
-        console.error("Supabase error saving support log:", error);
+        console.error("Supabase error saving whatsapp chat:", error);
         throw new Error("Failed to save support log to database");
     }
 
@@ -52,12 +61,12 @@ export async function processWhatsAppMessage(formData: FormData) {
 
 export async function getSupportLogs() {
     const { data, error } = await supabase
-        .from("support_logs")
+        .from("whatsapp_chats")
         .select("*")
         .order("created_at", { ascending: false });
 
     if (error) {
-        console.error("Supabase error fetching support logs:", error);
+        console.error("Supabase error fetching whatsapp chats:", error);
         return [];
     }
 

@@ -15,7 +15,16 @@ export async function addProduct(formData: FormData) {
     // 1. Get AI Categorization
     const aiResult = await categorizeProduct(name, description);
 
-    // 2. Save to Supabase
+    // 2. Log to ai_logs (Requirement)
+    await supabase.from("ai_logs").insert([
+        {
+            module_name: "Catalog Intelligence",
+            user_prompt: `Product Name: ${name}\nDescription: ${description}`,
+            ai_response: aiResult,
+        }
+    ]);
+
+    // 3. Save to Supabase
     const { data, error } = await supabase
         .from("products")
         .insert([

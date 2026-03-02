@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌍 Intelligent Sustainable Commerce OS
 
-## Getting Started
+## 🎯 Objective
+This project implements a suite of AI-powered modules designed to streamline B2B sustainable commerce operations. It leverages **Gemini 2.5 Flash** for high-speed, structured reasoning, ensuring that every AI output is grounded in business logic and ready for immediate database integration.
 
-First, run the development server:
+## 🏗️ Architecture Overview
+The system follows a modern **AI Gateway Pattern**, strictly separating the presentation layer from the core business reasoning logic.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```mermaid
+graph TD
+    User((B2B Client)) -->|WhatsApp/Web| App[Next.js Dashboard]
+    App -->|JSON Schema| Gemini[Gemini 2.5 Flash]
+    Gemini -->|Structured JSON| Logic[Business Logic Layer]
+    Logic -->|Verify & Parse| DB[(Supabase / Postgres)]
+    DB -->|Audit Logs| Logs[ai_logs / whatsapp_chats]
+    
+    subgraph "AI Modules"
+        M1[Catalog Intelligence]
+        M2[Proposal Strategist]
+        M3[Impact Analytics]
+        M4[Support Intelligence]
+    end
+    
+    Gemini -.-> M1
+    Gemini -.-> M2
+    Gemini -.-> M3
+    Gemini -.-> M4
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+*   **Frontend**: Next.js (App Router) with a premium "Elite Glassmorphism" UI.
+*   **AI Engine**: Google Gemini API utilizing `responseSchema` for deterministic JSON outputs.
+*   **Database**: Supabase (PostgreSQL) for relational data and `JSONB` audit logging.
+*   **Integration**: WhatsApp Cloud API via a custom Node.js/Next.js Webhook.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧠 AI Prompt Design Strategy
+To achieve the highest standards of **Business Logic Grounding**, the system utilizes several advanced prompting techniques:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1.  **Strict Enums & Schema Enforcement**: The AI is never allowed to "hallucinate" categories. Every module is backed by a TypeScript-defined JSON schema that restricts outputs (e.g., Primary Categories are limited to a predefined list).
+2.  **Chain-of-Thought (CoT) Reasoning**: For math-heavy modules like the **Proposal Strategist** and **Impact Analytics**, the AI is required to return a `calculation_logic` field. This forces the model to articulate its math before finalizing results, ensuring accuracy in budgets and environmental metrics.
+3.  **Intent Classifier Pattern**: In the **Support Intelligence** module, the AI acts as a router. It first classifies the user's intent and checks for escalation flags before generating a response, allowing the backend to handle sensitive requests (like refunds) separately from general inquiries.
 
-## Learn More
+## ⚙️ Implemented Modules
+- [x] **Module 1: Catalog Intelligence** - Automated categorization, sub-categorization, and B2B SEO tagging.
+- [x] **Module 2: Proposal Strategist** - Dynamic B2B proposal generation grounded in real-time budgets and product mixes.
+- [x] **Module 3: Impact Analytics** - Data-driven environmental reporting utilizing industry-standard baselines for CO2 and plastic savings.
+- [x] **Module 4: Support Intelligence** - A production-ready WhatsApp bot integration with automated escalation and database context awareness.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Getting Started
+1.  **Environment Setup**: Copy `.env.example` to `.env.local` and provide your Meta and Gemini API keys.
+2.  **Database Migration**: Run the provided SQL scripts in the Supabase SQL Editor.
+3.  **Local Development**: Run `npm run dev` to launch the dashboard.
+4.  **Webhook Setup**: Configure your Meta App to point to `/api/webhook` using your defined verify token.
